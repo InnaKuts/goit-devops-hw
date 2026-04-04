@@ -71,3 +71,18 @@ ENV/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Terraform (commit .terraform.lock.hcl for consistent provider versions)
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+*.tfvars.json
+.terraformrc
+terraform.rc
