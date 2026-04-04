@@ -32,3 +32,8 @@ output "nat_gateway_id" {
   description = "ID of the NAT Gateway"
   value       = module.vpc.nat_gateway_id
 }
+
+output "ecr_repository_url" {
+  description = "URL of the ECR repository"
+  value       = module.ecr.repository_url
+}

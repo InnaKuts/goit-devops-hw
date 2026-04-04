@@ -16,3 +16,9 @@ module "vpc" {
   availability_zones = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
   vpc_name           = "lesson-5-vpc"
 }
+
+module "ecr" {
+  source       = "./modules/ecr"
+  ecr_name     = "lesson-5-ecr"
+  scan_on_push = true
+}
