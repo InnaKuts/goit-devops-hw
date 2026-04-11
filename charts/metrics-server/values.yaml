@@ -1,0 +1,5 @@
+# Values passed to the metrics-server subchart
+metrics-server:
+  args:
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP

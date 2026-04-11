@@ -4,3 +4,8 @@ description: Helm chart for the GoIT Django homework app
 type: application
 version: 0.1.0
 appVersion: "4.2"
+dependencies:
+  - name: postgresql
+    version: "16.2.5"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled

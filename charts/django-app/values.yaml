@@ -1,11 +1,13 @@
-# Image: set repository to `terraform -chdir=lesson-7 output -raw ecr_repository_url` (no tag).
+# --- Образ Django з ECR (тема 4) ---
 image:
   repository: 815593910208.dkr.ecr.eu-north-1.amazonaws.com/lesson-5-ecr
   tag: latest
   pullPolicy: IfNotPresent
 
+# Початкова кількість реплік Deployment; має збігатися з autoscaling.minReplicas, якщо HPA увімкнено
 replicaCount: 2
 
+# --- Service: зовнішній доступ (LoadBalancer) ---
 service:
   type: LoadBalancer
   port: 8000
@@ -21,15 +23,43 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+# --- HPA: 2–6 реплік при середньому завантаженні CPU > 70% ---
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 6
   targetCPUUtilizationPercentage: 70
 
+# --- ConfigMap: змінні середовища з теми 4 (.env / Django settings) ---
 config:
   POSTGRES_HOST: db
   POSTGRES_PORT: "5432"
   POSTGRES_USER: django_user
   POSTGRES_DB: django_db
   POSTGRES_PASSWORD: pass9764gd
+
+# --- PostgreSQL (Bitnami subchart; сервіс db для POSTGRES_HOST) ---
+postgresql:
+  enabled: true
+  fullnameOverride: db
+  auth:
+    username: django_user
+    password: pass9764gd
+    database: django_db
+  primary:
+    podAntiAffinityPreset: ""
+    persistence:
+      enabled: false
+      size: 1Gi
+    shmVolume:
+      enabled: true
+      sizeLimit: 64Mi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 384Mi
+  metrics:
+    enabled: false

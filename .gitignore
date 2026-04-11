@@ -72,6 +72,9 @@ ENV/
 .dmypy.json
 dmypy.json
 
+# Helm — залежності з `helm dependency update` (коміть Chart.lock; архіви не комітити)
+charts/*/charts/*.tgz
+
 # Terraform (commit .terraform.lock.hcl for consistent provider versions)
 .terraform/
 *.tfstate
