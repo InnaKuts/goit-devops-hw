@@ -32,3 +32,18 @@ output "ecr_repository_url" {
   description = "URL of the ECR repository"
   value       = module.ecr.repository_url
 }
+
+output "eks_cluster_name" {
+  description = "EKS cluster name (for aws eks update-kubeconfig)"
+  value       = module.eks.cluster_name
+}
+
+output "eks_cluster_endpoint" {
+  description = "Kubernetes API server endpoint"
+  value       = module.eks.cluster_endpoint
+}
+
+output "eks_configure_kubeconfig" {
+  description = "Example command to merge kubeconfig for this cluster"
+  value       = "aws eks update-kubeconfig --region eu-north-1 --name ${module.eks.cluster_name}"
+}

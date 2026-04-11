@@ -21,3 +21,14 @@ module "ecr" {
   ecr_name     = "lesson-5-ecr"
   scan_on_push = true
 }
+
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_name       = "lesson-7-eks"
+  cluster_version    = "1.31"
+  private_subnet_ids = module.vpc.private_subnet_ids
+  public_subnet_ids  = module.vpc.public_subnet_ids
+
+  depends_on = [module.vpc]
+}
