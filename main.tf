@@ -30,5 +30,10 @@ module "eks" {
   private_subnet_ids = module.vpc.private_subnet_ids
   public_subnet_ids  = module.vpc.public_subnet_ids
 
+  node_desired_size = 4
+  node_min_size     = 2
+  node_max_size     = 6
+
+
   depends_on = [module.vpc]
 }

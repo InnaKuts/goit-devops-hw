@@ -47,3 +47,13 @@ output "eks_configure_kubeconfig" {
   description = "Example command to merge kubeconfig for this cluster"
   value       = "aws eks update-kubeconfig --region eu-north-1 --name ${module.eks.cluster_name}"
 }
+
+output "eks_oidc_provider_arn" {
+  description = "EKS OIDC provider ARN (for future IRSA roles, e.g. Jenkins Kaniko)"
+  value       = module.eks.oidc_provider_arn
+}
+
+output "eks_ebs_csi_addon_version" {
+  description = "aws-ebs-csi-driver EKS addon version"
+  value       = module.eks.ebs_csi_addon_version
+}
