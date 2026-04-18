@@ -9,6 +9,12 @@ controller:
     port: 80
     targetPort: 8080
 
+  # Drops config-reload-init (kiwigrid sidecar); avoids extra init failure modes on tiny nodes.
+  # JCasC still applies on controller startup.
+  sidecars:
+    configAutoReload:
+      enabled: false
+
   resources:
     limits:
       cpu: "500m"
@@ -17,14 +23,14 @@ controller:
       cpu: "100m"
       memory: "256Mi"
 
-  # Init containers otherwise inherit heavy defaults; keep within t3.micro headroom.
+  # Plugin install in `init` needs real heap; 384Mi often OOMKills on t3.micro stacks.
   initContainerResources:
     requests:
-      cpu: "50m"
-      memory: "128Mi"
+      cpu: "100m"
+      memory: "256Mi"
     limits:
-      cpu: "500m"
-      memory: "384Mi"
+      cpu: "1000m"
+      memory: "768Mi"
 
   installPlugins:
     - kubernetes:latest
@@ -32,7 +38,6 @@ controller:
     - git:latest
     - configuration-as-code:latest
     - credentials-binding:latest
-    - github:latest
 
 # Official chart uses top-level `persistence` (not controller.persistentVolume).
 persistence:
