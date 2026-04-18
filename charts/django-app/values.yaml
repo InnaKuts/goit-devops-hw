@@ -1,14 +1,16 @@
 replicaCount: 1
 
+# image.repository and image.tag are overwritten by Jenkins (see /Jenkinsfile).
+# Before the first pipeline run, set repository to: terraform output -raw ecr_repository_url
 image:
-  repository: nginx
-  tag: alpine
-  pullPolicy: IfNotPresent
+  repository: 815593910208.dkr.ecr.eu-north-1.amazonaws.com/goit-devops-hw-ecr
+  tag: "0"
+  pullPolicy: Always
 
 service:
   type: ClusterIP
   port: 80
-  targetPort: 80
+  targetPort: 8000
 
 resources:
   limits:
@@ -19,7 +21,7 @@ resources:
     memory: 128Mi
 
 config:
-  DJANGO_SETTINGS_MODULE: django.conf.global_settings
+  DJANGO_SETTINGS_MODULE: mysite.settings
 
 hpa:
   enabled: false

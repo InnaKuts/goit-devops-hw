@@ -20,6 +20,12 @@ provider "helm" {
   }
 }
 
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
 module "s3_backend" {
   source      = "./modules/s3-backend"
   bucket_name = "goit-devops-hw-tfstate-001001"
@@ -58,10 +64,13 @@ module "eks" {
 module "jenkins" {
   source = "./modules/jenkins"
 
-  cluster_name = module.eks.cluster_name
+  cluster_name        = module.eks.cluster_name
+  oidc_provider_arn   = module.eks.oidc_provider_arn
+  oidc_provider_url   = module.eks.oidc_provider_url
 
   providers = {
-    helm = helm
+    helm       = helm
+    kubernetes = kubernetes
   }
 
   depends_on = [module.eks]

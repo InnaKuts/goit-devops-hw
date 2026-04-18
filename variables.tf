@@ -13,5 +13,5 @@ variable "gitops_repo_path" {
 variable "gitops_target_revision" {
   description = "Branch or tag for Argo CD to track"
   type        = string
-  default     = "lesson-9"
+  default     = "lesson-8-9"
 }
