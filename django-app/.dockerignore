@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.py[cod]
+*.sqlite3
+*.sqlite3-journal
+.uv
+uv.lock
+.python-version
+*.md
+.env
+.idea
