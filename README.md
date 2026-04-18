@@ -1,22 +1,77 @@
-# GoIT DevOps — Домашнє завдання (теми 8–9): EKS, Jenkins, Argo CD, Helm, GitOps
+# GoIT DevOps — Домашні завдання
 
-Проєкт на **Terraform**: **VPC → EKS → ECR**, встановлення **Jenkins** та **Argo CD** через **Helm**, Helm-чарт **Django** у `charts/django-app` і **Jenkinsfile** з **Kaniko → ECR → оновлення Git**, щоб **Argo CD** підтягував застосунок з репозиторію (GitOps).
+Цей репозиторій містить декілька навчальних домашніх завдань з курсу GoIT DevOps.
 
-**Гілка для здачі:** `lesson-8-9` (узгоджено з `gitops_target_revision` і параметром `GIT_PUSH_BRANCH` у Jenkins за замовчуванням).
+Порядок у цьому README:
+
+- **Тема 10**: Terraform-модуль `rds` (RDS / Aurora)
+- **Теми 8–9**: EKS, Jenkins, Argo CD, Helm, GitOps (попереднє ДЗ)
 
 ---
 
 ## Структура моно-репозиторію
 
 | Шлях | Призначення |
-|------|-------------|
+| --- | --- |
 | `main.tf`, `backend.tf`, `variables.tf`, `outputs.tf` | Кореневий стек Terraform |
-| `modules/vpc`, `modules/eks`, `modules/ecr`, `modules/s3-backend` | Мережа, кластер, реєстр, бакенд стейту |
+| `modules/vpc`, `modules/eks`, `modules/ecr`, `modules/s3-backend`, `modules/rds` | Мережа, кластер, реєстр, бакенд стейту, база даних |
 | `modules/jenkins` | Helm-реліз Jenkins + IRSA для `jenkins-sa` (ECR) |
 | `modules/argo-cd` | Helm-реліз Argo CD + локальний чарт застосунків |
 | `charts/django-app` | Чарт застосунку (джерело для Argo + оновлення тегу з Jenkins) |
 | `django-app/` | Контекст збірки Docker для Kaniko |
 | `Jenkinsfile` | CI: Kaniko, ECR, коміт у Git |
+
+---
+
+## Домашнє завдання (тема 10): Terraform-модуль `rds` (RDS / Aurora)
+
+У репозиторії додано універсальний модуль [`modules/rds`](modules/rds), який створює:
+
+- **звичайну RDS instance** (PostgreSQL/MySQL), якщо `use_aurora = false`
+- **Aurora cluster + writer + readers**, якщо `use_aurora = true`
+
+В обох сценаріях створюються **DB Subnet Group**, **Security Group**, та **Parameter Group** (для Aurora — cluster parameter group).
+
+### Приклад використання
+
+У корені це підключено в [`main.tf`](main.tf) як `module "rds"`. Мінімум потрібних змінних:
+
+- `rds_master_password` (sensitive) — задайте в `terraform.tfvars` або через `TF_VAR_rds_master_password`
+- `rds_use_aurora` — перемикач Aurora/RDS
+
+Приклад `terraform.tfvars` (не комітьте):
+
+```hcl
+rds_master_password = "CHANGE_ME"
+rds_use_aurora      = false
+```
+
+### Змінні модуля
+
+Модуль приймає (деталі див. у [`modules/rds/variables.tf`](modules/rds/variables.tf)):
+
+- **`use_aurora`**: `true/false` — перемикає Aurora vs стандартний RDS
+- **RDS-only**: `engine`, `engine_version`, `parameter_group_family_rds`, `allocated_storage`, `multi_az`
+- **Aurora-only**: `engine_cluster`, `engine_version_cluster`, `parameter_group_family_aurora`, `aurora_replica_count`
+- **Network**: `vpc_id`, `subnet_private_ids`, `subnet_public_ids`, `publicly_accessible`
+- **Common**: `name`, `instance_class`, `db_name`, `username`, `password`, `backup_retention_period`, `parameters`, `tags`
+
+### Як змінити тип БД / engine / клас інстансу
+
+- **Перемкнути Aurora**: встановіть `rds_use_aurora = true` (це **знищить** `aws_db_instance` і створить кластер Aurora в тому ж state)
+- **Змінити RDS engine**: у `module "rds"` змініть `engine` / `engine_version` і відповідний `parameter_group_family_rds`
+- **Змінити Aurora engine**: змініть `engine_cluster` / `engine_version_cluster` і `parameter_group_family_aurora`
+- **Змінити клас інстансу**: `instance_class = "db.t3.micro"` (або інший)
+
+> Примітка (Free tier): у модулі дефолт `backup_retention_period = 0` для стандартного RDS (щоб не впиратися в обмеження free plan). Для Aurora значення 0 автоматично піднімається до 1 дня.
+
+---
+
+## Домашнє завдання (теми 8–9): EKS, Jenkins, Argo CD, Helm, GitOps
+
+Проєкт на **Terraform**: **VPC → EKS → ECR**, встановлення **Jenkins** та **Argo CD** через **Helm**, Helm-чарт **Django** у `charts/django-app` і **Jenkinsfile** з **Kaniko → ECR → оновлення Git**, щоб **Argo CD** підтягував застосунок з репозиторію (GitOps).
+
+**Гілка для здачі:** `lesson-8-9` (узгоджено з `gitops_target_revision` і параметром `GIT_PUSH_BRANCH` у Jenkins за замовчуванням).
 
 ---
 
