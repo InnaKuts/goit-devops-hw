@@ -17,11 +17,6 @@ controller:
       cpu: "250m"
       memory: "512Mi"
 
-  persistentVolume:
-    enabled: true
-    storageClass: gp2
-    size: 10Gi
-
   installPlugins:
     - kubernetes:latest
     - workflow-aggregator:latest
@@ -29,3 +24,9 @@ controller:
     - configuration-as-code:latest
     - credentials-binding:latest
     - github:latest
+
+# Official chart uses top-level `persistence` (not controller.persistentVolume).
+persistence:
+  enabled: true
+  storageClass: gp2
+  size: 10Gi
