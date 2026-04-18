@@ -77,3 +77,28 @@ output "argo_cd_admin_password_command" {
   description = "Print initial Argo CD admin password"
   value       = module.argo_cd.argo_cd_admin_password_command
 }
+
+output "rds_standard_endpoint" {
+  description = "PostgreSQL endpoint when use_aurora is false"
+  value       = module.rds.standard_endpoint
+}
+
+output "rds_standard_port" {
+  description = "Database port when use_aurora is false"
+  value       = module.rds.standard_port
+}
+
+output "rds_aurora_writer_endpoint" {
+  description = "Aurora writer endpoint when use_aurora is true"
+  value       = module.rds.aurora_cluster_endpoint
+}
+
+output "rds_aurora_reader_endpoint" {
+  description = "Aurora reader endpoint when use_aurora is true"
+  value       = module.rds.aurora_reader_endpoint
+}
+
+output "rds_security_group_id" {
+  description = "Security group attached to the database"
+  value       = module.rds.security_group_id
+}

@@ -15,3 +15,27 @@ variable "gitops_target_revision" {
   type        = string
   default     = "lesson-8-9"
 }
+
+variable "rds_master_password" {
+  description = "Master password for RDS or Aurora (set in terraform.tfvars or TF_VAR_rds_master_password; never commit secrets)"
+  type        = string
+  sensitive   = true
+}
+
+variable "rds_db_name" {
+  description = "Initial database name created on first provision"
+  type        = string
+  default     = "goitapp"
+}
+
+variable "rds_username" {
+  description = "Master username for the database"
+  type        = string
+  default     = "postgres"
+}
+
+variable "rds_use_aurora" {
+  description = "If true, provision Aurora cluster + writer + readers; if false, a single RDS instance"
+  type        = bool
+  default     = false
+}

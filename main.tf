@@ -91,3 +91,34 @@ module "argo_cd" {
 
   depends_on = [module.eks]
 }
+
+module "rds" {
+  source = "./modules/rds"
+
+  name                          = "goit-devops-hw-db"
+  use_aurora                    = var.rds_use_aurora
+  engine                        = "postgres"
+  engine_version                = "17.2"
+  instance_class                = "db.t3.micro"
+  allocated_storage             = 20
+  db_name                       = var.rds_db_name
+  username                      = var.rds_username
+  password                      = var.rds_master_password
+  vpc_id                        = module.vpc.vpc_id
+  subnet_private_ids            = module.vpc.private_subnet_ids
+  subnet_public_ids             = module.vpc.public_subnet_ids
+  publicly_accessible           = false
+  multi_az                      = false
+  aurora_replica_count          = 1
+  parameter_group_family_rds    = "postgres17"
+  engine_cluster                = "aurora-postgresql"
+  engine_version_cluster        = "15.3"
+  parameter_group_family_aurora = "aurora-postgresql15"
+
+  tags = {
+    Environment = "dev"
+    Project     = "goit-devops-hw"
+  }
+
+  depends_on = [module.vpc]
+}
