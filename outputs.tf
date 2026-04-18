@@ -57,3 +57,23 @@ output "eks_ebs_csi_addon_version" {
   description = "aws-ebs-csi-driver EKS addon version"
   value       = module.eks.ebs_csi_addon_version
 }
+
+output "jenkins_release" {
+  description = "Helm release name for Jenkins"
+  value       = module.jenkins.jenkins_release_name
+}
+
+output "jenkins_namespace" {
+  description = "Kubernetes namespace for Jenkins"
+  value       = module.jenkins.jenkins_namespace
+}
+
+output "argo_cd_namespace" {
+  description = "Kubernetes namespace for Argo CD"
+  value       = module.argo_cd.argo_cd_namespace
+}
+
+output "argo_cd_admin_password_command" {
+  description = "Print initial Argo CD admin password"
+  value       = module.argo_cd.argo_cd_admin_password_command
+}

@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "terraform_state" {
     Name        = "Terraform State Bucket"
     Environment = "goit-devops-hw"
   }
-} 
+}
 
 resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
   bucket = aws_s3_bucket.terraform_state.id

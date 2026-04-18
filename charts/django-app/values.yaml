@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: alpine
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
+
+config:
+  DJANGO_SETTINGS_MODULE: django.conf.global_settings
+
+hpa:
+  enabled: false

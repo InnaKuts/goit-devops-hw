@@ -1,0 +1,7 @@
+applications: []
+
+repositories: []
+
+repoConfig:
+  insecure: "false"
+  enableLfs: "false"
