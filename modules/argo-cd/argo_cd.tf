@@ -5,7 +5,7 @@ resource "helm_release" "argo_cd" {
   chart            = "argo-cd"
   version          = var.chart_version
   create_namespace = true
-  timeout          = 900
+  timeout          = 1800
 
   values = [
     file("${path.module}/values.yaml")
@@ -17,7 +17,7 @@ resource "helm_release" "argo_apps" {
   chart            = "${path.module}/charts"
   namespace        = var.namespace
   create_namespace = false
-  timeout          = 600
+  timeout          = 1800
 
   depends_on = [helm_release.argo_cd]
 
