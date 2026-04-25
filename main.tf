@@ -54,8 +54,6 @@ module "eks" {
   private_subnet_ids = module.vpc.private_subnet_ids
   public_subnet_ids  = module.vpc.public_subnet_ids
 
-  # t3.micro: very low max-pods per node (~4); after DaemonSets only ~1 schedulable
-  # pod/node. Jenkins + Argo need several extra slots — use more micro nodes.
   node_desired_size = 10
   node_min_size     = 2
   node_max_size     = 14
@@ -63,20 +61,20 @@ module "eks" {
   depends_on = [module.vpc]
 }
 
-module "jenkins" {
-  source = "./modules/jenkins"
+# module "jenkins" {
+#   source = "./modules/jenkins"
 
-  cluster_name        = module.eks.cluster_name
-  oidc_provider_arn   = module.eks.oidc_provider_arn
-  oidc_provider_url   = module.eks.oidc_provider_url
+#   cluster_name        = module.eks.cluster_name
+#   oidc_provider_arn   = module.eks.oidc_provider_arn
+#   oidc_provider_url   = module.eks.oidc_provider_url
 
-  providers = {
-    helm       = helm
-    kubernetes = kubernetes
-  }
+#   providers = {
+#     helm       = helm
+#     kubernetes = kubernetes
+#   }
 
-  depends_on = [module.eks]
-}
+#   depends_on = [module.eks]
+# }
 
 module "argo_cd" {
   source = "./modules/argo-cd"
