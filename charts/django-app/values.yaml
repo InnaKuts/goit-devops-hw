@@ -4,7 +4,7 @@ replicaCount: 1
 # Before the first pipeline run, set repository to: terraform output -raw ecr_repository_url
 image:
   repository: 815593910208.dkr.ecr.eu-north-1.amazonaws.com/goit-devops-hw-ecr
-  tag: "0"
+  tag: "manual-20260425-140350"
   pullPolicy: Always
 
 service:
