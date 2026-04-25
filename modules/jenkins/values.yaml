@@ -1,4 +1,8 @@
 controller:
+  image:
+    registry: docker.io
+    repository: jenkins/jenkins
+    tag: lts-jdk17
   admin:
     username: admin
     password: admin123
@@ -31,13 +35,21 @@ controller:
     limits:
       cpu: "1000m"
       memory: "768Mi"
+  # Keep JVM heap bounded on tiny nodes.
+  javaOpts: "-Xms128m -Xmx512m -XX:+UseSerialGC"
+  initContainerEnv:
+    - name: JAVA_OPTS
+      value: "-Xms128m -Xmx512m -XX:+UseSerialGC"
+
+  # Avoid resolving/upgrading to latest plugin graph on startup.
+  installLatestPlugins: false
+  installLatestSpecifiedPlugins: false
 
   installPlugins:
-    - kubernetes:latest
-    - workflow-aggregator:latest
-    - git:latest
-    - configuration-as-code:latest
-    - credentials-binding:latest
+    - kubernetes
+    - workflow-aggregator
+    - git
+    - credentials-binding
 
 # Official chart uses top-level `persistence` (not controller.persistentVolume).
 persistence:
