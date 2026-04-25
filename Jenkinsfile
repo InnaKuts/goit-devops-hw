@@ -2,7 +2,7 @@
 // `jenkins-sa` + IRSA are created by Terraform (modules/jenkins) for ECR push.
 //
 // Assignment text (UK) mentions updating values in *another* Git repo and pushing *main*.
-// Defaults match a monorepo + branch lesson-8-9; set parameters to follow the letter of the task:
+// Defaults match a monorepo + branch main; set parameters to follow the letter of the task:
 //   HELM_VALUES_REPO_URL = https://github.com/ORG/CHART-REPO.git  (leave empty for monorepo)
 //   GIT_PUSH_BRANCH      = main
 pipeline {
@@ -44,7 +44,7 @@ spec:
   parameters {
     string(
       name: 'GIT_PUSH_BRANCH',
-      defaultValue: 'lesson-8-9',
+      defaultValue: 'main',
       description: 'Branch to push (assignment example: main).'
     )
     string(

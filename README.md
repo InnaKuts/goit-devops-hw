@@ -71,7 +71,7 @@ rds_use_aurora      = false
 
 Проєкт на **Terraform**: **VPC → EKS → ECR**, встановлення **Jenkins** та **Argo CD** через **Helm**, Helm-чарт **Django** у `charts/django-app` і **Jenkinsfile** з **Kaniko → ECR → оновлення Git**, щоб **Argo CD** підтягував застосунок з репозиторію (GitOps).
 
-**Гілка для здачі:** `lesson-8-9` (узгоджено з `gitops_target_revision` і параметром `GIT_PUSH_BRANCH` у Jenkins за замовчуванням).
+**Гілка для здачі:** `main` (узгоджено з `gitops_target_revision` і параметром `GIT_PUSH_BRANCH` у Jenkins за замовчуванням).
 
 ---
 
@@ -108,7 +108,7 @@ flowchart LR
 
 1. Зміни в коді потрапляють у Git; Jenkins запускає пайплайн з `Jenkinsfile`.
 2. **Kaniko** збирає образ з `django-app/Dockerfile` і пушить у **ECR** (агент використовує **`jenkins-sa`** + **IRSA**).
-3. Етап **Git** оновлює `charts/django-app/values.yaml` (`image.repository` / `image.tag`) і пушить у вказану гілку (за замовчуванням `lesson-8-9`).
+3. Етап **Git** оновлює `charts/django-app/values.yaml` (`image.repository` / `image.tag`) і пушить у вказану гілку (за замовчуванням `main`).
 4. **Application** у Argo CD стежить за тим самим шляхом у репо; увімкнено **автосинхронізацію** (`prune`, `selfHeal` у `modules/argo-cd/argo_cd.tf`).
 
 ---
@@ -174,7 +174,7 @@ terraform output argo_cd_admin_password_command
 
 3. **Облікові дані:** у Jenkins додайте облікові записи з ID **`github-token`** (логін GitHub + PAT) — їх використовує `Jenkinsfile`.
 
-4. **Pipeline:** створіть job типу Pipeline з **SCM**, вкажіть цей репозиторій і гілку `lesson-8-9`, шлях до скрипта — **`Jenkinsfile`**.
+4. **Pipeline:** створіть job типу Pipeline з **SCM**, вкажіть цей репозиторій і гілку `main`, шлях до скрипта — **`Jenkinsfile`**.
 
 5. **Запуск:** виконайте збірку; мають пройти етапи **Checkout → Resolve ECR → Build and push (Kaniko) → Bump Helm values and push** (параметри описані на початку `Jenkinsfile`).
 
