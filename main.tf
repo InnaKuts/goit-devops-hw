@@ -76,19 +76,29 @@ module "eks" {
 #   depends_on = [module.eks]
 # }
 
-module "argo_cd" {
-  source = "./modules/argo-cd"
-
-  gitops_repo_url        = var.gitops_repo_url
-  gitops_repo_path       = var.gitops_repo_path
-  gitops_target_revision = var.gitops_target_revision
-
-  providers = {
-    helm = helm
-  }
-
-  depends_on = [module.eks]
-}
+# module "argo_cd" {
+#   source = "./modules/argo-cd"
+#
+#   gitops_repo_url        = var.gitops_repo_url
+#   gitops_repo_path       = var.gitops_repo_path
+#   gitops_target_revision = var.gitops_target_revision
+#
+#   providers = {
+#     helm = helm
+#   }
+#
+#   depends_on = [module.eks]
+# }
+#
+# module "monitoring" {
+#   source = "./modules/monitoring"
+#
+#   providers = {
+#     helm = helm
+#   }
+#
+#   depends_on = [module.eks]
+# }
 
 module "rds" {
   source = "./modules/rds"
