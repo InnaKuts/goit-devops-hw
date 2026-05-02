@@ -1,0 +1,5 @@
+# prometheus-community/prometheus: server, alertmanager, pushgateway, node exporter (chart defaults).
+# No PVC: avoids volume binding issues on small clusters; enable persistence for production.
+server:
+  persistentVolume:
+    enabled: false

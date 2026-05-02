@@ -89,7 +89,7 @@ output "grafana_admin_password_command" {
 }
 
 output "monitoring_prometheus_port_forward" {
-  description = "Port-forward Prometheus UI (kube-prometheus-stack service names)"
+  description = "Port-forward Prometheus UI (prometheus-community/prometheus chart)"
   value       = module.monitoring.prometheus_port_forward
 }
 

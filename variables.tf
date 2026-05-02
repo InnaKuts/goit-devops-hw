@@ -39,3 +39,10 @@ variable "rds_use_aurora" {
   type        = bool
   default     = false
 }
+
+variable "grafana_admin_password" {
+  description = "Grafana admin password for module.monitoring (override in terraform.tfvars or TF_VAR_grafana_admin_password)"
+  type        = string
+  sensitive   = true
+  default     = "admin123"
+}
