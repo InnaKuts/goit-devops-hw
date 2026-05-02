@@ -61,34 +61,34 @@ module "eks" {
   depends_on = [module.vpc]
 }
 
-# module "jenkins" {
-#   source = "./modules/jenkins"
-#
-#   cluster_name        = module.eks.cluster_name
-#   oidc_provider_arn   = module.eks.oidc_provider_arn
-#   oidc_provider_url   = module.eks.oidc_provider_url
-#
-#   providers = {
-#     helm       = helm
-#     kubernetes = kubernetes
-#   }
-#
-#   depends_on = [module.eks]
-# }
+module "jenkins" {
+  source = "./modules/jenkins"
 
-# module "argo_cd" {
-#   source = "./modules/argo-cd"
-#
-#   gitops_repo_url        = var.gitops_repo_url
-#   gitops_repo_path       = var.gitops_repo_path
-#   gitops_target_revision = var.gitops_target_revision
-#
-#   providers = {
-#     helm = helm
-#   }
-#
-#   depends_on = [module.eks]
-# }
+  cluster_name        = module.eks.cluster_name
+  oidc_provider_arn   = module.eks.oidc_provider_arn
+  oidc_provider_url   = module.eks.oidc_provider_url
+
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+  }
+
+  depends_on = [module.eks]
+}
+
+module "argo_cd" {
+  source = "./modules/argo-cd"
+
+  gitops_repo_url        = var.gitops_repo_url
+  gitops_repo_path       = var.gitops_repo_path
+  gitops_target_revision = var.gitops_target_revision
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [module.eks]
+}
 
 module "monitoring" {
   source = "./modules/monitoring"
