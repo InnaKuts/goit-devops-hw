@@ -77,16 +77,16 @@ output "eks_ebs_csi_addon_version" {
 #   description = "Print initial Argo CD admin password"
 #   value       = module.argo_cd.argo_cd_admin_password_command
 # }
-#
-# output "monitoring_namespace" {
-#   description = "Kubernetes namespace for Prometheus/Grafana"
-#   value       = module.monitoring.namespace
-# }
-#
-# output "grafana_admin_password_command" {
-#   description = "Print Grafana admin password"
-#   value       = module.monitoring.grafana_admin_password_command
-# }
+
+output "monitoring_namespace" {
+  description = "Kubernetes namespace for Prometheus/Grafana"
+  value       = module.monitoring.namespace
+}
+
+output "grafana_admin_password_command" {
+  description = "Print Grafana admin password"
+  value       = module.monitoring.grafana_admin_password_command
+}
 
 output "rds_standard_endpoint" {
   description = "PostgreSQL endpoint when use_aurora is false"

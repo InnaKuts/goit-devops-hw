@@ -89,16 +89,16 @@ module "eks" {
 #
 #   depends_on = [module.eks]
 # }
-#
-# module "monitoring" {
-#   source = "./modules/monitoring"
-#
-#   providers = {
-#     helm = helm
-#   }
-#
-#   depends_on = [module.eks]
-# }
+
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [module.eks]
+}
 
 module "rds" {
   source = "./modules/rds"
