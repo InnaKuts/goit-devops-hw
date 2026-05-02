@@ -19,10 +19,28 @@ prometheusOperator:
       memory: 256Mi
 
 kubeStateMetrics:
-  enabled: false
+  enabled: true
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 150m
+      memory: 128Mi
 
 nodeExporter:
-  enabled: false
+  enabled: true
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 48Mi
+    limits:
+      cpu: 100m
+      memory: 96Mi
 
 grafana:
   enabled: true
@@ -34,7 +52,7 @@ grafana:
     dashboards:
       enabled: false
     datasources:
-      enabled: false
+      enabled: true
   resources:
     requests:
       cpu: 25m

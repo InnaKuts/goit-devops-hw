@@ -88,6 +88,16 @@ output "grafana_admin_password_command" {
   value       = module.monitoring.grafana_admin_password_command
 }
 
+output "monitoring_prometheus_port_forward" {
+  description = "Port-forward Prometheus UI (kube-prometheus-stack service names)"
+  value       = module.monitoring.prometheus_port_forward
+}
+
+output "monitoring_grafana_port_forward" {
+  description = "Port-forward Grafana UI"
+  value       = module.monitoring.grafana_port_forward
+}
+
 output "rds_standard_endpoint" {
   description = "PostgreSQL endpoint when use_aurora is false"
   value       = module.rds.standard_endpoint
