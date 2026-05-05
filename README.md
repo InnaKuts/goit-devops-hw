@@ -7,6 +7,7 @@
 - [Структура репозиторію](#структура-репозиторію)
 - [Склад стеку](#склад-стеку)
 - [Архітектура CI/CD](#архітектура-cicd)
+- [Локальний запуск Django (Docker Compose)](#локальний-запуск-django-docker-compose)
 - [База даних (RDS / Aurora)](#база-даних-rds--aurora)
 - [Що потрібно перед стартом](#що-потрібно-перед-стартом)
 - [Terraform: застосування та виходи](#terraform-застосування-та-виходи)
@@ -15,8 +16,7 @@
 - [Перевірка моніторингу (Prometheus / Grafana)](#перевірка-моніторингу-prometheus--grafana)
 - [Автомасштабування застосунку (HPA)](#автомасштабування-застосунку-hpa)
 - [Обмеження малих нод EKS](#обмеження-малих-нод-eks)
-- [Формат здачі](#формат-здачі)
-- [Докази роботи (скриншоти)](#докази-роботи-скриншоти)
+- [Скриншоти](#скриншоти)
 
 ## Структура репозиторію
 
@@ -28,7 +28,7 @@
 | `modules/jenkins` | Helm-реліз Jenkins + IRSA для `jenkins-sa` (push у ECR) |
 | `modules/argo-cd` | Helm-реліз Argo CD + локальний чарт застосунків |
 | `charts/django-app` | Чарт застосунку (джерело для Argo CD; оновлення тегу образу з Jenkins); за потреби **HPA** за CPU |
-| `django-app/` | Контекст збірки Docker для Kaniko |
+| `django-app/` | Контекст збірки Docker для Kaniko; [`docker-compose.yaml`](django-app/docker-compose.yaml) — локальний запуск (див. [нижче](#локальний-запуск-django-docker-compose)) |
 | `Jenkinsfile` | CI: Kaniko, ECR, коміт змін у Git |
 
 ## Склад стеку
@@ -73,6 +73,17 @@ flowchart LR
 
 **Гілка для пайплайну та GitOps:** `main` (узгоджено з `gitops_target_revision` і параметром `GIT_PUSH_BRANCH` у Jenkins за замовчуванням).
 
+## Локальний запуск Django (Docker Compose)
+
+У каталозі [`django-app/`](django-app) є **`docker-compose.yaml`** лише для локальної розробки: за замовчуванням використовується SQLite (`mysite.settings`), **не** EKS і **не** CI.
+
+```bash
+cd django-app
+docker compose up --build
+```
+
+Сервіс публікується як **`127.0.0.1:8001` → порт 8000 у контейнері** (на хості обрано **8001**, щоб уникнути конфлікту з іншими процесами на типовому порту 8000). Якщо потрібен інший порт на машині — змініть ліву частину мапінгу у `ports` у compose-файлі.
+
 ## База даних (RDS / Aurora)
 
 У репозиторії є модуль [`modules/rds`](modules/rds), який створює:
@@ -81,6 +92,8 @@ flowchart LR
 - **Aurora cluster + writer + readers**, якщо `use_aurora = true`
 
 В обох сценаріях створюються **DB Subnet Group**, **Security Group** та **Parameter Group** (для Aurora — cluster parameter group).
+
+**Доступ до PostgreSQL (порт 5432):** security group дозволяє вхід лише з CIDR, переданих у **`ingress_cidr_blocks`**. У кореневому [`main.tf`](main.tf) туди передаються **`module.vpc.private_subnet_cidrs`** — тобто адреси **приватних підмереж VPC**, а не весь інтернет. Модуль VPC експортує ці значення в [`modules/vpc/outputs.tf`](modules/vpc/outputs.tf) як **`private_subnet_cidrs`**.
 
 ### Приклад використання
 
@@ -103,7 +116,7 @@ rds_use_aurora      = false
 - **`use_aurora`**: `true/false` — перемикає Aurora vs стандартний RDS
 - **RDS-only**: `engine`, `engine_version`, `parameter_group_family_rds`, `allocated_storage`, `multi_az`
 - **Aurora-only**: `engine_cluster`, `engine_version_cluster`, `parameter_group_family_aurora`, `aurora_replica_count`
-- **Network**: `vpc_id`, `subnet_private_ids`, `subnet_public_ids`, `publicly_accessible`
+- **Network**: `vpc_id`, `ingress_cidr_blocks`, `subnet_private_ids`, `subnet_public_ids`, `publicly_accessible`
 - **Common**: `name`, `instance_class`, `db_name`, `username`, `password`, `backup_retention_period`, `parameters`, `tags`
 
 ### Як змінити тип БД / engine / клас інстансу
@@ -205,7 +218,7 @@ terraform output monitoring_grafana_port_forward
 
    Користувач: **`admin`**.
 
-4. **Application:** у UI відкрийте **Applications** → застосунок **`django-app`** (ім’я з `modules/argo-cd/variables.tf`). Очікуйте статуси **Synced** та **Healthy**, коли в Git коректний чарт і образ.
+4. **Application:** у UI відкрийте **Applications** → застосунок **`django-app`** (ім'я з `modules/argo-cd/variables.tf`). Очікуйте статуси **Synced** та **Healthy**, коли в Git коректний чарт і образ.
 
 ## Перевірка моніторингу (Prometheus / Grafana)
 
@@ -225,11 +238,11 @@ helm list -n monitoring
 
 ## Автомасштабування застосунку (HPA)
 
-У [`charts/django-app`](charts/django-app) увімкнено **HorizontalPodAutoscaler** (ресурс **CPU**, цільове навантаження **80%**, **1–3** репліки — див. [`templates/hpa.yaml`](charts/django-app/templates/hpa.yaml) та [`values.yaml`](charts/django-app/values.yaml)).
+У [`charts/django-app`](charts/django-app) увімкнено **HorizontalPodAutoscaler** (ресурс **CPU**, цільове навантаження **80%**, **1 - 3** репліки — див. [`templates/hpa.yaml`](charts/django-app/templates/hpa.yaml) та [`values.yaml`](charts/django-app/values.yaml)).
 
 ## Обмеження малих нод EKS
 
-У модулі `modules/eks` за замовчуванням використовуються інстанси **`t3.micro`**: мало оперативної пам’яті та низька щільність подів на ноду. У **Jenkins** контейнер **`init`** завантажує плагіни через Java; при малому ліміті пам’яті можливий **`OutOfMemoryError`** під час роботи з `plugin-versions.json`. Для стабільного запуску потрібні більші типи інстансів, більше нод, менший набір плагінів або образ Jenkins з уже встановленими плагінами.
+У модулі `modules/eks` за замовчуванням використовуються інстанси **`t3.micro`**: мало оперативної пам'яті та низька щільність подів на ноду. У **Jenkins** контейнер **`init`** завантажує плагіни через Java; при малому ліміті пам'яті можливий **`OutOfMemoryError`** під час роботи з `plugin-versions.json`. Для стабільного запуску потрібні більші типи інстансів, більше нод, менший набір плагінів або образ Jenkins з уже встановленими плагінами.
 
 ## Скриншоти
 

@@ -1,0 +1,8 @@
+# Local development only (SQLite via default settings). Not used by EKS / CI.
+services:
+  web:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      DJANGO_SETTINGS_MODULE: mysite.settings

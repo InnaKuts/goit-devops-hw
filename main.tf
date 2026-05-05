@@ -115,6 +115,7 @@ module "rds" {
   username                      = var.rds_username
   password                      = var.rds_master_password
   vpc_id                        = module.vpc.vpc_id
+  ingress_cidr_blocks           = module.vpc.private_subnet_cidrs
   subnet_private_ids            = module.vpc.private_subnet_ids
   subnet_public_ids             = module.vpc.public_subnet_ids
   publicly_accessible           = false

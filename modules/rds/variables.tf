@@ -84,6 +84,11 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "ingress_cidr_blocks" {
+  description = "CIDR blocks allowed to reach PostgreSQL on port 5432 (e.g. private subnet CIDRs)"
+  type        = list(string)
+}
+
 variable "subnet_private_ids" {
   description = "Private subnet IDs used when publicly_accessible is false"
   type        = list(string)
